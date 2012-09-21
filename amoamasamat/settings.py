@@ -127,7 +127,8 @@ INSTALLED_APPS = (
     'south',
     'latingrammar',
     'webpages',
-    'englishgrammar'
+    'englishgrammar',
+    'quizzer'
 )
 
 # A sample logging configuration. The only tangible logging

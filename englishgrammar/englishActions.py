@@ -1,4 +1,4 @@
-from latingrammar.models import *
+from englishgrammar.models import *
 import re
 
 def makeTableArray(theTable):
@@ -19,12 +19,11 @@ def processString(verb,str):
         #that was easy - we just got told what to return (i.e. an irregular)
         return str
 
-def getLatinVerbForm(theVerb,thePerson,theTense):
+def getEnglishVerbForm(theVerb,thePerson,theTense):
     
     verb = theVerb
-    tenseObject = LatinTense.objects.get(name=theTense)
-    table = LatinTable.objects.filter(conjugation=verb.conjugation).get(tense=tenseObject)
+    tenseObject = EnglishTense.objects.get(name=theTense)
+    table = EnglishTable.objects.filter(conjugation=verb.conjugation).get(tense=tenseObject)
     tableWord = makeTableArray(table)[thePerson]
     actualWord = processString(verb,tableWord)
     return actualWord
-    
