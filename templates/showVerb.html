@@ -1,8 +1,20 @@
 <html>
-<head></head>
+<head>
+<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/homepage.css"
+</head>
 <body>
-<p>Hello! Welcome to Ad Nauseum.</p>
-{{question}}<BR/>
-{{answer}}
+<p>Hello! Welcome to Ad Nauseam.</p>
+
+Your question:<BR/>
+<div class="content">
+{{question}}<p>
+<form>
+    <input type="text"/><BR>
+    <input type="submit"/>
+</form>
+</div>
+
+{{answer}}<BR/>
+{{noun}}
 </body>
 </html>

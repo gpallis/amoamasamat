@@ -1,0 +1,9 @@
+p.question {color:red}
+
+div.content { 
+    width: 960px; /* fixed width */
+    margin: 10 40;
+    padding-top:10px;
+    padding-left:10px;
+    border: 1px dashed;
+}

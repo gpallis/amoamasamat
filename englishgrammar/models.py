@@ -1,5 +1,5 @@
 from django.db import models
-from latingrammar.models import LatinVerb
+from latingrammar.models import LatinVerb,LatinNoun
 
 class EnglishConjugation(models.Model):
     #Currently, irregulars will be entirely separate conjugations.    
@@ -33,3 +33,10 @@ class EnglishTable(models.Model):
     person6 = models.CharField(max_length=100)
     def __unicode__(self):
         return self.tense.name + ' of ' + self.conjugation.name
+
+class EnglishNoun(models.Model):
+    singular = models.CharField(max_length=100)
+    plural = models.CharField(max_length=100)
+    translation = models.ForeignKey(LatinNoun)
+    def __unicode__(self):
+        return self.singular
