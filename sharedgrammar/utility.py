@@ -1,5 +1,11 @@
 import re
 
+def getPerson(original,plurality):
+    if plurality == 'singular':
+        return original
+    else:
+        return original + 3 #now a plural form
+
 def handleSyntax(str):
     #this needs to move to a sharedgrammar app.
     
