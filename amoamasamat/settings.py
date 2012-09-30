@@ -130,7 +130,8 @@ INSTALLED_APPS = (
     'webpages',
     'englishgrammar',
     'sharedgrammar',
-    'quizzer'
+    'quizzer',
+    'lessons'
 )
 
 # A sample logging configuration. The only tangible logging

@@ -3,18 +3,23 @@
 <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/homepage.css"
 </head>
 <body>
-<p>Hello! Welcome to Ad Nauseam.</p>
-
-Your question:<BR/>
-<div class="content">
-{{question}}<p>
-<form>
-    <input type="text"/><BR>
-    <input type="submit"/>
-</form>
+<!--<p>Hello! Welcome to Ad Nauseam.</p>-->
+<div style="text-align:center; margin-bottom:10px">
+{% autoescape off %}
+{{previousAttemptResult}}
+{% endautoescape %}
 </div>
 
-{{answer}}<BR/>
-{{noun}}
+<div class="container">
+    <div class = "content">
+    <span class = "question">{{question}}</span><p>
+    <form class = "mainForm" method="POST">
+        {% csrf_token %}
+        <input name="playerAnswer" type="text"/>
+    </form>
+    </div>
+</div>
+
+
 </body>
 </html>

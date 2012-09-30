@@ -6,6 +6,15 @@ from quizzer import quizUtility
 from latingrammar.models import *
 from englishgrammar.models import *
 
+def checkAnswer(correctAnswer,givenAnswer):
+    #Returns [boolean,message]
+    #message is html, escaped, so shouldn't contain original answer!
+    if set( correctAnswer.split(" ")) == set(givenAnswer.split(" ") ):
+        return (True,'<span style="color:green">Correct! Well done.</span>')
+    else:
+        #Answer is wrong.
+        return (False,'<span style="color:red">Not quite. The answer was: <strong>' +correctAnswer+ '</strong>.</span>')
+
 def getRandomVerb():
     englishVerb = quizUtility.generateVerb()
     latinVerb = englishVerb.translation
