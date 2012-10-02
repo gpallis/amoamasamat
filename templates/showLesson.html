@@ -3,13 +3,18 @@
     <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/lesson.css">
 </head>
 <body>
+    {{test}}
 <!--    #header should be handled by extending base.html, this is djangoish-->
     <div class="header">
         <span class="headerText">
-            {% if user %}
-                Salve, {{user.username}}, you have {{user.profile.xp}}XP!
+            {% if user.email %}
+                Salve, {{user.email}}, you have {{user.profile.xp}}XP!
             {% else %}
-                Not logged in.
+                <form method="POST">
+                {% csrf_token %}
+                Not logged in. If you have an account, sign in with your email here:
+                    <input type='text' name='email'/>
+                </form>
             {% endif %}
         </span>
         <div class ="bottomLine"></div>
@@ -27,7 +32,12 @@
                 <span class="rightAlign">
                     <a href="{% url webpages.views.showLearningPage %}{{next}}">NEXT</a>
                 </span>
+                {% else %}
+                <span class="rightAlign">
+                    <a href="{% url webpages.views.play %}">START</a>
+                </span>
                 {% endif %}
+                
                 {% if prev %}
                 <span class="leftAlign">
                     <a href="{% url webpages.views.showLearningPage %}{{prev}}">BACK</a>

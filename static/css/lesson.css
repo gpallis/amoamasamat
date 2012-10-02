@@ -5,7 +5,7 @@ div.header {
     text-align:center;
 }
 
- body{
+body{
     margin:0px 5px;
  }
 
@@ -13,7 +13,10 @@ span.headerText {
     color:333333;
     font-family:Georgia,serif;
     font-size:16px;
-    line-height:20px;
+}
+
+span.headerText > form {
+    display:inline;
 }
 
 div.bottomLine {
@@ -23,7 +26,6 @@ div.bottomLine {
     border-bottom: solid 1px;
     border-bottom-color: 666666
 }
-
 
 div.container {
     width: 760px;

@@ -113,7 +113,12 @@ TEMPLATE_DIRS = (
     "/Users/greg.pallis/Sites/amoamasamat/templates"
 )
 
+#Self-added lines.
 AUTH_PROFILE_MODULE = "account.UserProfile"
+AUTHENTICATION_BACKENDS = (
+    'account.backends.EmailModelBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -124,10 +129,10 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
-    # Uncomment the next line to enable admin documentation:
-    # 'django.contrib.admindocs',
+    
     'amoamasamat',
     'south',
+    
     'latingrammar',
     'webpages',
     'englishgrammar',
