@@ -113,6 +113,8 @@ TEMPLATE_DIRS = (
     "/Users/greg.pallis/Sites/amoamasamat/templates"
 )
 
+AUTH_PROFILE_MODULE = "account.UserProfile"
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -131,7 +133,8 @@ INSTALLED_APPS = (
     'englishgrammar',
     'sharedgrammar',
     'quizzer',
-    'lessons'
+    'lessons',
+    'account',
 )
 
 # A sample logging configuration. The only tangible logging

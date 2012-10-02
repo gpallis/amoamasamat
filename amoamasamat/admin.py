@@ -16,9 +16,29 @@ admin.site.register(EnglishTense)
 admin.site.register(EnglishConjugation)
 admin.site.register(EnglishTable)
 admin.site.register(NounProperty)
-admin.site.register(Lesson)
+
+class LessonAdmin(admin.ModelAdmin):
+    list_display = ('level','__unicode__')
+    
+admin.site.register(Lesson, LessonAdmin)
 
 class EnglishNounAdmin(admin.ModelAdmin):
     filter_horizontal = ("properties",)
+    
+
 
 admin.site.register(EnglishNoun,EnglishNounAdmin)
+
+from django.contrib.auth.models import User
+from django.contrib.auth.admin import UserAdmin
+from account.models import UserProfile
+
+admin.site.unregister(User)
+
+class UserProfileInline(admin.StackedInline):
+    model = UserProfile
+
+class UserProfileAdmin(UserAdmin):
+    inlines = [ UserProfileInline, ]
+
+admin.site.register(User, UserProfileAdmin)
