@@ -1,25 +1,40 @@
-<html>
-<head>
-<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/homepage.css"
-</head>
-<body>
-<!--<p>Hello! Welcome to Ad Nauseam.</p>-->
-<div style="text-align:center; margin-bottom:10px">
-{% autoescape off %}
-{{previousAttemptResult}}
-{% endautoescape %}
-</div>
+{% extends "baseWithBox.html" %}
 
-<div class="container">
-    <div class = "content">
-    <span class = "question">{{question}}</span><p>
-    <form class = "mainForm" method="POST">
+{% block script %}
+<script>
+function setFocus() {document.getElementById("answerField").focus();}
+</script>
+{% endblock %}
+
+{%block bodyTag%}<body onload="setFocus()">{% endblock %}
+
+{% block heading %}{{level.title}}{% endblock %}
+{% block boxContent %}
+    <div id = "question">{{question}}</div><p>
+    <form class = "mainForm" method="POST" name="answerForm">
         {% csrf_token %}
-        <input name="playerAnswer" type="text"/>
+        <input name="playerAnswer" type="text" autocomplete="off" id="answerField"/>
     </form>
-    </div>
-</div>
+{% endblock %}
 
+{% block belowBox%}
+
+    <div style="width:760px;margin:auto">
+    <div style="width:720px;margin-top:5px"> <!--An inline div declaration, the surrounding area, as slider's width is 100%-->
+	<div id="slider">
+		<div id="sliderbar" style= "width:{{progress}}%">
+		</div>
+	</div>
+    </div>
+    </div>
+    
+    <!--feedback text-->
+    <p>{% autoescape off %}
+    <div id="answerFeedback">{{feedback}}</div>
+    {% endautoescape %}</p>
+
+
+{% endblock %}
 
 </body>
 </html>

@@ -8,7 +8,7 @@ urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'webpages.views.home', name='home'),
     
-    url(r'^lessons/$', 'webpages.views.showLearningPage', {'pageLevelString':'0.00'}), #if no param, goto lesson 0. This pattern is used as the base URL for links in the template.
+    url(r'^lessons/$', 'webpages.views.showLearningPage', {'pageLevelString':'1.00'}), #if no param, goto lesson 0. This pattern is used as the base URL for links in the template.
     url(r'^lessons/(?P<pageLevelString>\d\.\d+)/$', 'webpages.views.showLearningPage'),
     url(r'^play/$', 'webpages.views.play'),
     

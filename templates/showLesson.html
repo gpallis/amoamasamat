@@ -1,51 +1,24 @@
-<html>
-<head>
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/lesson.css">
-</head>
-<body>
-    {{test}}
-<!--    #header should be handled by extending base.html, this is djangoish-->
-    <div class="header">
-        <span class="headerText">
-            {% if user.email %}
-                Salve, {{user.email}}, you have {{user.profile.xp}}XP!
-            {% else %}
-                <form method="POST">
-                {% csrf_token %}
-                Not logged in. If you have an account, sign in with your email here:
-                    <input type='text' name='email'/>
-                </form>
-            {% endif %}
+{% extends "baseWithBox.html" %}
+    
+{% block heading %}{{lesson.title}}{% endblock %}
+{% block boxContent %}
+    <div id="mainBoxText">{{lesson.content|safe}}</div>
+    <div id="buttonHolder">
+        {% if next %}
+        <span class="rightAlign">
+            <a href="{% url webpages.views.showLearningPage %}{{next}}">NEXT</a>
         </span>
-        <div class ="bottomLine"></div>
+        {% else %}
+        <span class="rightAlign">
+            <a href="{% url webpages.views.play %}">START</a>
+        </span>
+        {% endif %}
         
+        {% if prev %}
+        <span class="leftAlign">
+            <a href="{% url webpages.views.showLearningPage %}{{prev}}">BACK</a>
+        </span>
+        {% endif %}
     </div>
-    
-    
-    <div class="container">
-        <div class="box">
-            <div class="titlebox"><h1>{{lesson.title}}</h1></div>
-            <div class="lessonBox">
-                <div class="lessonText">{{lesson.content|safe}}</div>
-                <div class="buttonHolder">
-                {% if next %}
-                <span class="rightAlign">
-                    <a href="{% url webpages.views.showLearningPage %}{{next}}">NEXT</a>
-                </span>
-                {% else %}
-                <span class="rightAlign">
-                    <a href="{% url webpages.views.play %}">START</a>
-                </span>
-                {% endif %}
-                
-                {% if prev %}
-                <span class="leftAlign">
-                    <a href="{% url webpages.views.showLearningPage %}{{prev}}">BACK</a>
-                </span>
-                </div>
-                {% endif %}
-                <div style="clear: both;"></div>
-            </div>
-        </div>
-    </div>
+{% endblock %}
 </html>

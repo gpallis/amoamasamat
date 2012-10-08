@@ -16,6 +16,7 @@ admin.site.register(EnglishTense)
 admin.site.register(EnglishConjugation)
 admin.site.register(EnglishTable)
 admin.site.register(NounProperty)
+admin.site.register(Level)
 
 class LessonAdmin(admin.ModelAdmin):
     list_display = ('level','__unicode__')

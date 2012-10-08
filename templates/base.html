@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+{% block stylesheet %} <link rel = "stylesheet" type = "text/css" href = "{{STATIC_URL}}css/base.css"/> {% endblock %}
+{%block script %}{% endblock %}
+<title>{% block pagetitle %}Ad Nauseam - Latin Latin Latin{% endblock %}</title>
+</head>
+
+{%block bodyTag %}<body>{% endblock %}
+    {% block header %}
+    <div class="header">
+        <span class="headerText">
+            {% if user.email %}
+                Salve, {{user.email}}, you have {{user.profile.xp}}XP!
+            {% else %}
+                <form method="POST">
+                {% csrf_token %}
+                Not logged in. If you have an account, sign in with your email here:
+                    <input type='text' name='email'/>
+                </form>
+            {% endif %}
+        </span>
+        <div class ="bottomLine"></div>
+        
+    </div>
+    {% endblock %}
+
+    {% block mainContent %}
+    {% endblock %}
+</body>
+</html>

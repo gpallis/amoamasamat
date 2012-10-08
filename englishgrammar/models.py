@@ -43,6 +43,6 @@ class EnglishNoun(models.Model):
     singular = models.CharField(max_length=100)
     plural = models.CharField(max_length=100)
     translation = models.ForeignKey(LatinNoun)
-    properties = models.ManyToManyField(NounProperty,related_name='egg_set',blank=True)
+    properties = models.ManyToManyField(NounProperty,related_name='noun_set',blank=True)
     def __unicode__(self):
         return self.singular

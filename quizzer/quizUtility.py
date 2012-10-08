@@ -7,7 +7,7 @@ from sharedgrammar.models import NounProperty
 def generateVerb(contraints):
     return random.choice(EnglishVerb.objects.all())
 
-def getCompatibleNoun(verb,subjectOrObject):
+def getCompatibleNoun(verb,subjectOrObject, forbiddenWords = []):
     
     if subjectOrObject == 'subject':
         requirements = verb.subject_requires.all()
@@ -18,20 +18,24 @@ def getCompatibleNoun(verb,subjectOrObject):
         
     possibleNouns = EnglishNoun.objects.all()
     for desiredProperty in requirements:
-        validNouns = desiredProperty.egg_set.all()
+        validNouns = desiredProperty.noun_set.all()
         possibleNouns = (possibleNouns & validNouns)
     
     for undesiredProperty in exclusions:
-        invalidNouns = undesiredProperty.egg_set.all()
+        invalidNouns = undesiredProperty.noun_set.all()
         possibleNouns = (possibleNouns - invalidNouns)
     
-    return  random.choice(possibleNouns)
+    chosenNoun = random.choice(possibleNouns)
+    if chosenNoun in forbiddenWords:
+        return getCompatibleNoun(verb, subjectOrObject,forbiddenWords)
+    else:
+        return chosenNoun
     
 def getTriplet():
     #returns a mutually compatible subject/object/verb set as a dictionary
     verb = generateVerb(None)
     subject = getCompatibleNoun(verb,'subject')
-    object = getCompatibleNoun(verb,'object')
+    object = getCompatibleNoun(verb,'object', [subject])
     return (subject, object, verb)
     
     

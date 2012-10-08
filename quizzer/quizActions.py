@@ -13,7 +13,7 @@ def checkAnswer(correctAnswer,givenAnswer):
         return (True,'<span style="color:green">Correct! Well done.</span>')
     else:
         #Answer is wrong.
-        return (False,'<span style="color:red">Not quite. The answer was: <strong>' +correctAnswer+ '</strong>.</span>')
+        return [False,'<span style="color:red">Not quite. The answer was: <strong>' +correctAnswer+ '</strong>.</span>']
 
 def getRandomVerb():
     englishVerb = quizUtility.generateVerb()

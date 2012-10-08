@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block mainContent%}
+{% block aboveBox %}{% endblock %}
+<div id="mainActionBoxContainer">
+    <div id="mainActionBox">
+        <div id="titlebox"><h1>{%block heading%}{%endblock%}</h1></div>
+        <div id="lessonBox">
+            {%block boxContent %}
+                TEST TEXT
+            {% endblock %}
+        </div>
+    </div>
+</div>
+{% block belowBox %}{% endblock %}
+{% endblock %}
+</html>
