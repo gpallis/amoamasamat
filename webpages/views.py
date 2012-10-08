@@ -12,13 +12,13 @@ def home(request):
     
 def showLearningPage(request, pageLevelString):
     
-    if request.POST and request.POST['email']:
+    if request.POST and 'email' in request.POST:
         #Right now, all users have the password hello.
         user = authenticate(username=request.POST['email'], password='hello')
         if user is not None:
             login(request, user)
     
-    #this is rather ugly - it could certainly be re-written, or more likely refactored w/ database changes ('course' model)
+    #this is rather ugly - it could certainly be re-written, or more likely refactored w/ database changes
     #get the next/prev links, as appropriate
     
     pageLevel= float(pageLevelString)
@@ -50,18 +50,27 @@ def play(request):
             gainXP(request,verdict)
     else:
         verdict = [None,'']
-    
-    question = quizActions.getChapterThreeShortSentence()
-    request.session['correctAnswer'] = question[1]
-    
-    progressBar = getProgress(request)
-    
-    return render(request,'showVerb.html',{
-        'level':getCurrentLevel(request),
-        'progress':progressBar,
-        'question':question[0],
-        'feedback':verdict[1],
-        })
+        
+    if checkForLevelUp(request):
+            #this will be awkward , at present, if the user isn't logged in.
+            user_profile = request.user.profile
+            user_profile.level += 1
+            user_profile.xp = 0
+            user_profile.save()
+            return showLearningPage(request, user_profile.level)
+            
+    else:
+        question = quizActions.getChapterThreeShortSentence()
+        request.session['correctAnswer'] = question[1]
+        
+        progressBar = getProgress(request)
+        
+        return render(request,'showVerb.html',{
+            'level':getCurrentLevel(request),
+            'progress':progressBar,
+            'question':question[0],
+            'feedback':verdict[1],
+            })
 
 def getProgress(request):
     #returns percentile user progress
@@ -93,10 +102,7 @@ def gainXP(request,verdict):
         user_profile = request.user.profile
         user_profile.xp += 1
         user_profile.save()
-        if checkForLevelUp(request):
-            user_profile.level += 1
-            user_profile.xp = 0
-            user_profile.save()
+        
     else:
         #player is not authenticated
         #there will always already be an xp parameter
