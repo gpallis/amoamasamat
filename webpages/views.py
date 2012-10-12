@@ -1,20 +1,66 @@
 from django.http import HttpResponse
-from django.shortcuts import render
-from quizzer import quizActions
+from django.shortcuts import render, redirect
+from quizzer import quizActions, quizUtility
 from account.models import UserProfile
 from lessons.models import Lesson,Level
+from englishgrammar.models import EnglishVerb
 from django.core.paginator import Paginator
 from decimal import *
 from django.contrib.auth import login,authenticate
+from django.contrib.auth.models import User
+from webpages.forms import SignUpForm
 
 def home(request):
     return showLearningPage(request,'1.00')
+
+def showSignUpPage(request):
+    if request.POST and 'email' in request.POST: 
+        #They've attempted to sign up!
+        form = SignUpForm(request.POST)
+        if not form.is_valid():
+            #but with an invalid email.
+            return render(request,'signup.html', {'error':'Invalid email address'})
+            
+        else:
+            #form was valid
+            #is the email in use?
+            try:
+                user = User.objects.get(email=form.cleaned_data['email'])
+            except:
+                #It's un-used!
+                #so it's fine - create the account
+                createAccount(form.cleaned_data['email'])
+                
+                #and sign 'em in
+                signedInUser = authenticate(username=form.cleaned_data['email'],password='hello')
+                login(request, signedInUser)
+                #and finally, take em to the lesson!
+                targetLesson = Lesson.objects.get(level='2.00')
+                return redirect(targetLesson)
+            else:
+                #hang on, this email already exists!
+                return render(request,'signup.html', {'error':'Email already in use'})
+            
     
+    else:
+        #no form submitted, first-time viewing.
+        return render(request,'signup.html', {})
+
+def createAccount(email):
+    user = User.objects.create_user(email,email,'hello')
+    user.save()
+    #Make them level 2
+    user_profile = user.profile
+    user_profile.level = 2
+    #they now know amo
+    user_profile.knownVerbs.add(EnglishVerb.objects.get(present='love'))
+    user_profile.save()
+
 def showLearningPage(request, pageLevelString):
     
-    if request.POST and 'email' in request.POST:
+    if request.POST and 'login-email' in request.POST:
         #Right now, all users have the password hello.
-        user = authenticate(username=request.POST['email'], password='hello')
+        user = authenticate(username=request.POST['login-email'], password='hello')
         if user is not None:
             login(request, user)
     
@@ -47,20 +93,28 @@ def play(request):
         #Verdict returns [Boolean, feedback comment]
         verdict = quizActions.checkAnswer(request.session['correctAnswer'],request.POST['playerAnswer'])
         if verdict[0] == True:
+            #got the question right
             gainXP(request,verdict)
     else:
+        #No post request made - we navigated to this page or were taken there by a link.
         verdict = [None,'']
         
     if checkForLevelUp(request):
-            #this will be awkward , at present, if the user isn't logged in.
-            user_profile = request.user.profile
-            user_profile.level += 1
-            user_profile.xp = 0
-            user_profile.save()
-            return showLearningPage(request, user_profile.level)
-            
+            #We've just levelled up!
+            if request.user.is_authenticated():
+                #We're already logged in, so proceed as normal to a lesson.
+                levelUpPlayer(request)
+                return showLearningPage(request, request.user.profile.level)
+            else:
+                #But we're not logged in!
+                return redirect('/signup/', request=request)
+    
     else:
-        question = quizActions.getChapterThreeShortSentence()
+        #We haven't levelled up, so advance progress bars etc.
+        #get the question
+        question = quizUtility.getAppropriateQuestion(request)
+        
+        #set up the asking of it
         request.session['correctAnswer'] = question[1]
         
         progressBar = getProgress(request)
@@ -72,6 +126,13 @@ def play(request):
             'feedback':verdict[1],
             })
 
+def levelUpPlayer(request):
+    user_profile = request.user.profile
+    user_profile.level += 1
+    user_profile.xp = 0
+    user_profile.save()
+                
+
 def getProgress(request):
     #returns percentile user progress
     if request.user.is_authenticated():
@@ -81,7 +142,7 @@ def getProgress(request):
         #no logged-in user
         if ('xp') not in request.session:
             #if no xp for the session either, set it to 0.
-            request.session['xp'] = 0
+            createSessionXP(request)
         #whether we just set it 0, or we're using an existing session['xp'], better make it a float
         xp = float(request.session['xp'])
         
@@ -113,9 +174,15 @@ def checkForLevelUp(request):
     if request.user.is_authenticated():
         xp = request.user.profile.xp
     else:
+        if ('xp') not in request.session:
+            createSessionXP(request)
         xp = request.session['xp']
         
     if xp >= getCurrentLevel(request).number_of_questions:
         return True
     else:
         return False
+    
+def createSessionXP(request):
+    request.session['xp'] = 0
+    

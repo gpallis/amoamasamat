@@ -1,0 +1,23 @@
+{% extends "baseWithBox.html" %}
+
+{% block script %}
+<script>
+function setFocus() {document.getElementById("signupField").focus();}
+</script>
+{% endblock %}
+{%block bodyTag%}<body onload="setFocus()">{% endblock %}
+
+{% block heading %}Create an account{% endblock %}
+{% block boxContent %}
+    <div id="mainBoxText">
+        Great job! You'll be wanting to save your progress - there aren't any passwords at the moment, so just enter an e-mail address below.
+        <br><br><p>
+        <form class = "mainForm" method="POST" name="signupForm">
+            {% csrf_token %}
+            <div id="errorMessage">{{error}}</div>
+            <input type="text" id="signupField" name = "email" value="Your e-mail" autocomplete="off"/>
+        </form>
+        </p>
+    </div>
+{% endblock %}
+</html>

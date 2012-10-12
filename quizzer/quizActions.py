@@ -15,8 +15,8 @@ def checkAnswer(correctAnswer,givenAnswer):
         #Answer is wrong.
         return [False,'<span style="color:red">Not quite. The answer was: <strong>' +correctAnswer+ '</strong>.</span>']
 
-def getRandomVerb():
-    englishVerb = quizUtility.generateVerb()
+def getRandomVerbQuestion(user_profile):
+    englishVerb = quizUtility.generateVerb(user_profile)
     latinVerb = englishVerb.translation
     person = random.randrange(1,7)
     
@@ -25,21 +25,19 @@ def getRandomVerb():
     return (question,answer)
     
 def getEnglishPronoun(person):
-    persons = (None, 'I', 'you', random.choice(['he','she']), 'we', 'you (pl.)', 'they')
+    persons = (None, 'I', 'You', random.choice(['He','She','It']), 'We', 'You (plural)', 'They')
     return persons[person]
     
 def getRandomNoun():
     latinNoun = random.choice(LatinNoun.objects.all())
-    return latinNouns.getLatinNounForm(latinNoun,'accusative','plural')
+    return latinNouns.getLatinNounForm(latinNoun,'accusative','plural') 
 
-def getChapterThreeShortSentence():
+def getChapterThreeShortSentence(user_profile):
     subjectPlurality = random.choice( ('singular','plural') )
     objectPlurality = random.choice( ('singular','plural') )
     person = utility.getPerson(3,subjectPlurality)
     
-    words = quizUtility.getTriplet()
-    
-    #re-instate no duplication   
+    words = quizUtility.getTriplet(user_profile)
     
     question = ("The " + englishNouns.getEnglishNounForm(words[0],subjectPlurality) + " "
     + englishVerbs.getEnglishVerbForm(words[2],person,'Present Active') + " the " +

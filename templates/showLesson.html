@@ -2,7 +2,7 @@
     
 {% block heading %}{{lesson.title}}{% endblock %}
 {% block boxContent %}
-    <div id="mainBoxText">{{lesson.content|safe}}</div>
+    <div id="mainBoxText">{{lesson.content|safe|linebreaks}}</div>
     <div id="buttonHolder">
         {% if next %}
         <span class="rightAlign">

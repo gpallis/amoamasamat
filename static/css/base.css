@@ -106,6 +106,13 @@ div#question {
     font-size:30px;
 }
 
+div#errorMessage {
+    color:red;
+    padding-top:0px;
+    margin-top:0px;
+    margin-bottom:0px;
+}
+
 div#answerFeedback {
     margin-top:3px;
     text-align:center;
@@ -146,6 +153,13 @@ div#answerFeedback {
 	box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.4), inset 0px -1px 1px rgba(0, 0, 0, 0.2);
 }
 
+div.twoColumnTable {
+    margin-left:65px;
+    width:80%;
+    display:inline-block;
+    }
 
+div.leftColumn {font-weight: bold;float:left;line-height:22px}
+div.rightColumn {margin-left:100px;line-height:22px}
 
 

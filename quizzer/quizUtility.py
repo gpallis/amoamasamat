@@ -3,9 +3,31 @@ import random
 #quizutility generates questions. Functionality like translation would be better in sharedgrammar.
 from englishgrammar.models import *
 from sharedgrammar.models import NounProperty
+from lessons.models import Level
+from django.contrib.auth.models import User
+import quizActions
 
-def generateVerb(contraints):
-    return random.choice(EnglishVerb.objects.all())
+def getAppropriateQuestion(request):
+    if request.user.is_authenticated():
+        user_profile = request.user.profile
+    else:
+        user_profile = User.objects.get(username='.signed-out-user').profile
+    
+    levelObject = Level.objects.get(level_number=user_profile.level)
+    generator = levelObject.question_generator
+    generatorFunction = getGeneratorFunction(generator)
+    return generatorFunction(user_profile)
+
+def getGeneratorFunction(name):
+    functionDictionary = {
+        "threeWordSentence":quizActions.getChapterThreeShortSentence,
+        "verb":quizActions.getRandomVerbQuestion
+    }
+    return functionDictionary[name]
+
+
+def generateVerb(user_profile):
+    return random.choice(user_profile.knownVerbs.all())
 
 def getCompatibleNoun(verb,subjectOrObject, forbiddenWords = []):
     
@@ -31,9 +53,9 @@ def getCompatibleNoun(verb,subjectOrObject, forbiddenWords = []):
     else:
         return chosenNoun
     
-def getTriplet():
+def getTriplet(user_profile):
     #returns a mutually compatible subject/object/verb set as a dictionary
-    verb = generateVerb(None)
+    verb = generateVerb(user_profile)
     subject = getCompatibleNoun(verb,'subject')
     object = getCompatibleNoun(verb,'object', [subject])
     return (subject, object, verb)
