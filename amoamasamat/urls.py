@@ -12,6 +12,8 @@ urlpatterns = patterns('',
     url(r'^lessons/(?P<pageLevelString>\d\.\d+)/$', 'webpages.views.showLearningPage'),
     url(r'^play/$', 'webpages.views.play'),
     url(r'^signup/$', 'webpages.views.showSignUpPage'),
+    url(r'^signin/$', 'webpages.views.signin'),
+    url(r'^signout/$', 'webpages.views.signout'),
     
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

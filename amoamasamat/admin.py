@@ -15,17 +15,21 @@ admin.site.register(EnglishVerb)
 admin.site.register(EnglishTense)
 admin.site.register(EnglishConjugation)
 admin.site.register(EnglishTable)
+admin.site.register(Subset)
 admin.site.register(NounProperty)
-admin.site.register(Level)
 
 class LessonAdmin(admin.ModelAdmin):
     list_display = ('level','__unicode__')
     
 admin.site.register(Lesson, LessonAdmin)
 
+class LevelAdmin(admin.ModelAdmin):
+    filter_horizontal=('verb_unlocks','noun_unlocks')
+    
+admin.site.register(Level,LevelAdmin)
+
 class EnglishNounAdmin(admin.ModelAdmin):
     filter_horizontal = ("properties",)
-    
 
 
 admin.site.register(EnglishNoun,EnglishNounAdmin)

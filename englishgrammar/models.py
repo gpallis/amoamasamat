@@ -10,11 +10,14 @@ class EnglishConjugation(models.Model):
 
 class EnglishVerb(models.Model):
     translation = models.OneToOneField(LatinVerb)
+    
     present = models.CharField(max_length=100)
     infinitive = models.CharField(max_length=100)
     perfect = models.CharField(max_length=100)
     pastparticiple = models.CharField(max_length=100)
     conjugation = models.ForeignKey(EnglishConjugation)
+    
+    transitive = models.BooleanField(default=True)
     subject_requires = models.ManyToManyField(NounProperty, related_name="subject_requires_set",blank=True)
     subject_excludes = models.ManyToManyField(NounProperty, related_name="subject_excludes_set",blank=True)
     object_requires = models.ManyToManyField(NounProperty, related_name="object_requires_set",blank=True)

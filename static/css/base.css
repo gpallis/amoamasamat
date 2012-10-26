@@ -5,8 +5,11 @@ body{
 /*#header*/
 div.header {
     margin-top:4px;
+    margin-left:auto;
+    margin-right:auto;
     width:100%;
-    text-align:center;
+    text-align:right;
+    width:90%;
 }
 
 span.headerText {
@@ -21,10 +24,13 @@ span.headerText > form {
     display:inline;
 }
 
+span.headerText > a:visited {text-decoration:none;}
+span.headerText > a:link {text-decoration:none;}
+
 div.bottomLine {
     margin-left:auto;
     margin-right:auto;
-    width:90%;
+    width:100%;
     border-bottom: solid 1px;
     border-bottom-color: #666666
 }
@@ -62,18 +68,24 @@ div#titlebox {
     background-color:bisque;
     border-bottom: 1px dashed;
     z-index:1;
+    text-indent:5px;
 }
 div#lessonBox {
     margin: auto;
-    padding:5px;
+    padding-top:5px;
+    padding-bottom:5px;
+    padding-left:5px;
+    padding-right:5px;
 }
 div#mainBoxText {
     color:#333333;
     font-size:16px;
     font-family:Georgia,serif;
+    padding-left:5px;
+    padding-right:10px;
 }
 div#buttonHolder {
-    margin-top:5px;
+    margin-top:8px;
     width:100%;
     min-height:26px;
     font-size:26px;

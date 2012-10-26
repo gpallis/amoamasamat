@@ -28,9 +28,40 @@ def getEnglishPronoun(person):
     persons = (None, 'I', 'You', random.choice(['He','She','It']), 'We', 'You (plural)', 'They')
     return persons[person]
     
-def getRandomNoun():
-    latinNoun = random.choice(LatinNoun.objects.all())
-    return latinNouns.getLatinNounForm(latinNoun,'accusative','plural') 
+def twoWordNominativeSentence(user_profile):
+    englishVerb = quizUtility.generateVerb(user_profile)
+    latinVerb = englishVerb.translation
+    
+    englishNoun = quizUtility.getCompatibleNoun(englishVerb,user_profile,'subject')
+    latinNoun = englishNoun.translation
+    
+    subjectPlurality = random.choice( ('singular', 'plural') )
+    verbPerson = 3
+    if subjectPlurality == 'plural':
+        verbPerson = 6
+    
+    question = ("The " + englishNouns.getEnglishNounForm(englishNoun,subjectPlurality)
+                + " " + englishVerbs.getEnglishVerbForm(englishVerb,verbPerson,'Present Active') +"." )
+    answer = latinNouns.getLatinNounForm(latinNoun,'nominative',subjectPlurality) + " " + latinVerbs.getLatinVerbForm(latinVerb,verbPerson,'Present Active')
+    return (question,answer)
+    
+def twoWordAccusativeSentence(user_profile):
+    #get a triplet - we'll ignore the nominative.
+    #Use of gettriplet forces a transitive verb, which is good.
+    words = quizUtility.getTriplet(user_profile)
+    
+    verbPerson = random.randrange(1,7)
+    objectPlurality = random.choice( ('singular','plural') )
+
+    question = (getEnglishPronoun(verbPerson).title() + " "
+        + englishVerbs.getEnglishVerbForm(words[2],verbPerson,'Present Active') + " the "
+        + englishNouns.getEnglishNounForm(words[1],objectPlurality))
+    
+    answer = ( latinNouns.getLatinNounForm(words[1].translation,'accusative',objectPlurality)
+              + " " + latinVerbs.getLatinVerbForm(words[2].translation,verbPerson,'Present Active') )
+    
+    return (question,answer)
+
 
 def getChapterThreeShortSentence(user_profile):
     subjectPlurality = random.choice( ('singular','plural') )

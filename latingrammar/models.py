@@ -1,5 +1,9 @@
 from django.db import models
 
+#signals - the 'all' subset needs to be informed of new conj/dec/tenses
+from django.db.models import signals
+from django.dispatch import dispatcher, receiver
+
 class LatinConjugation(models.Model):
     #Currently, irregulars will be entirely separate conjugations.    
     name = models.CharField(max_length=100)
@@ -12,7 +16,7 @@ class LatinVerb(models.Model):
     perfect = models.CharField(max_length=100)
     pastparticiple = models.CharField(max_length=100)
     conjugation = models.ForeignKey(LatinConjugation)
-    transitive = models.BooleanField(default=True)
+    
     def __unicode__(self):
         return self.present
         
@@ -61,3 +65,35 @@ class LatinNounTable(models.Model):
     ablativePlural = models.CharField(max_length=100)
     def __unicode__(self):
         return self.declension.name + " Declension"
+    
+class Subset(models.Model):
+    #A subset is a group of nouns/verbs etc used in a level
+    #For example, when we learn the imperfect of the 2nd, only 2nd conj. verbs should be used.
+    name = models.CharField(max_length=100)
+    conjugations = models.ManyToManyField(LatinConjugation, blank=True)
+    tenses = models.ManyToManyField(LatinTense,blank=True)
+    declensions = models.ManyToManyField(LatinDeclension,blank=True)
+    def __unicode__(self):
+        return self.name
+
+@receiver(signals.post_save, sender = LatinConjugation)
+def newConjugation(sender, instance, **stuff):
+    # **stuff is a dictionary containing any headers not explicitly listed previously    
+    theSubset = Subset.objects.get(name='all')
+    theSubset.conjugations.add(instance)
+    theSubset.save()
+    
+@receiver(signals.post_save, sender = LatinTense)
+def newTense(sender, instance, **stuff):
+    # **stuff is a dictionary containing any headers not explicitly listed previously    
+    theSubset = Subset.objects.get(name='all')
+    theSubset.tenses.add(instance)
+    theSubset.save()
+    
+@receiver(signals.post_save, sender = LatinDeclension)
+def newDeclension(sender, instance, **stuff):
+    # **stuff is a dictionary containing any headers not explicitly listed previously    
+    theSubset = Subset.objects.get(name='all')
+    theSubset.declensions.add(instance)
+    theSubset.save()
+    

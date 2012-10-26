@@ -16,7 +16,7 @@ class Level(models.Model):
     level_number = models.IntegerField()
     number_of_questions = models.IntegerField()
     question_generator = models.CharField(max_length=100,default="threeWordSentence")
-    verb_unlocks = models.ManyToManyField(EnglishVerb)
-    noun_unlocks = models.ManyToManyField(EnglishNoun)
+    verb_unlocks = models.ManyToManyField(EnglishVerb,blank=True)
+    noun_unlocks = models.ManyToManyField(EnglishNoun,blank=True)
     def __unicode__(self):
         return self.title

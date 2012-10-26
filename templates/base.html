@@ -11,13 +11,15 @@
     <div class="header">
         <span class="headerText">
             {% if user.email %}
-                Salve, {{user.email}}, you have {{user.profile.xp}}XP!
+                    {{user.email}} &nbsp;&bull;&nbsp; <a href="{% url webpages.views.signout %}">Sign Out</a>
             {% else %}
                 <form method="POST">
                 {% csrf_token %}
+                <div style="text-align:center">
                 Not logged in. If you have an account, sign in with your email here:
                     <input type='text' name='login-email'/>
                 </form>
+                </div>
             {% endif %}
         </span>
         <div class ="bottomLine"></div>

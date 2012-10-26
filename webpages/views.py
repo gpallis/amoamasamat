@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from quizzer import quizActions, quizUtility
 from account.models import UserProfile
@@ -6,12 +6,26 @@ from lessons.models import Lesson,Level
 from englishgrammar.models import EnglishVerb
 from django.core.paginator import Paginator
 from decimal import *
-from django.contrib.auth import login,authenticate
+from django.contrib.auth import login,authenticate,logout
 from django.contrib.auth.models import User
 from webpages.forms import SignUpForm
 
 def home(request):
-    return showLearningPage(request,'1.00')
+    if request.user.is_authenticated():
+        return showLearningPage(request,request.user.profile.level)
+    else:
+        return showLearningPage(request,'1.00')
+        
+def signin(request):
+    #authentication achieved. we're signed in. what now?
+    if endOfCourse(request):
+        return showEndOfCourse(request)
+    else:
+        return showLearningPage(request, request.user.profile.level)
+        
+def signout(request):
+    logout(request)
+    return redirect('webpages.views.home')
 
 def showSignUpPage(request):
     if request.POST and 'email' in request.POST: 
@@ -49,24 +63,39 @@ def showSignUpPage(request):
 def createAccount(email):
     user = User.objects.create_user(email,email,'hello')
     user.save()
-    #Make them level 2
+    #Make them level
     user_profile = user.profile
-    user_profile.level = 2
+    user_profile.level = 1
     #they now know amo
-    user_profile.knownVerbs.add(EnglishVerb.objects.get(present='love'))
+    user_profile.known_verbs.add(EnglishVerb.objects.get(present='love'))
     user_profile.save()
+    #finally, level them to 2
+    levelUpPlayer(user_profile)
+
+def is_attempted_login(request):
+    if request.POST and 'login-email' in request.POST:
+        return True
+    else:
+        return False
+
+def sign_in_user(request):
+    #Right now, all users have the password hello.
+    user = authenticate(username=request.POST['login-email'], password='hello')
+    if user is not None:
+        login(request, user)
+        return HttpResponseRedirect('/signin')
+    
 
 def showLearningPage(request, pageLevelString):
     
-    if request.POST and 'login-email' in request.POST:
-        #Right now, all users have the password hello.
-        user = authenticate(username=request.POST['login-email'], password='hello')
-        if user is not None:
-            login(request, user)
+    #check such a page is in the course.
+    if endOfCourse(request):
+        return showEndOfCourse(request)
     
-    #this is rather ugly - it could certainly be re-written, or more likely refactored w/ database changes
-    #get the next/prev links, as appropriate
-    
+    #Attempted sign in.
+    if is_attempted_login(request):
+        return sign_in_user(request)
+            
     pageLevel= float(pageLevelString)
     
     if Lesson.objects.filter(level=str(pageLevel+0.01)):
@@ -89,7 +118,16 @@ def showLearningPage(request, pageLevelString):
     })
     
 def play(request):
+    
+    #Sanity check - show course end if there.
+    if endOfCourse(request):
+        return render(request,'end-of-course.html',{})
+    
+    if is_attempted_login(request):
+        return sign_in_user(request)
+    
     if request.method == 'POST':
+        #This isn't a sign-in attempt, as we'd have returned elsewhere from sign_in_user
         #Verdict returns [Boolean, feedback comment]
         verdict = quizActions.checkAnswer(request.session['correctAnswer'],request.POST['playerAnswer'])
         if verdict[0] == True:
@@ -103,8 +141,13 @@ def play(request):
             #We've just levelled up!
             if request.user.is_authenticated():
                 #We're already logged in, so proceed as normal to a lesson.
-                levelUpPlayer(request)
-                return showLearningPage(request, request.user.profile.level)
+                if levelUpIsPermissable(request):
+                    #And we're allowed to level up!
+                    levelUpPlayer(request.user.profile)
+                    return showLearningPage(request, request.user.profile.level)
+                else:
+                    #Level up forbidden!
+                    return showEndOfCourse(request)
             else:
                 #But we're not logged in!
                 return redirect('/signup/', request=request)
@@ -126,9 +169,12 @@ def play(request):
             'feedback':verdict[1],
             })
 
-def levelUpPlayer(request):
-    user_profile = request.user.profile
+def levelUpPlayer(user_profile):
     user_profile.level += 1
+    for verb in Level.objects.get(level_number=user_profile.level).verb_unlocks.all():
+        user_profile.known_verbs.add(verb)
+    for noun in Level.objects.get(level_number=user_profile.level).noun_unlocks.all():
+        user_profile.known_nouns.add(noun)
     user_profile.xp = 0
     user_profile.save()
                 
@@ -186,3 +232,24 @@ def checkForLevelUp(request):
 def createSessionXP(request):
     request.session['xp'] = 0
     
+def endOfCourse(request):
+    currentLevel = getCurrentLevel(request)
+    try:
+        possibleLevel = Level.objects.get(level_number=currentLevel.level_number)
+    except:
+        return True
+    else:
+        return False
+    
+def levelUpIsPermissable(request):
+    currentLevel = getCurrentLevel(request).level_number
+    nextLevel = str(int(currentLevel) + 1)
+    try:
+        intendedLevel = Level.objects.get(level_number=nextLevel)
+    except:
+        return False
+    else:
+        return True
+    
+def showEndOfCourse(request):
+    return render(request,'end-of-course.html',{})

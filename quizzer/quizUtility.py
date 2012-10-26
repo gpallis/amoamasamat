@@ -20,16 +20,24 @@ def getAppropriateQuestion(request):
 
 def getGeneratorFunction(name):
     functionDictionary = {
+        "twoWordNominativeSentence":quizActions.twoWordNominativeSentence,
+        "twoWordAccusativeSentence":quizActions.twoWordAccusativeSentence,
         "threeWordSentence":quizActions.getChapterThreeShortSentence,
         "verb":quizActions.getRandomVerbQuestion
     }
     return functionDictionary[name]
 
 
-def generateVerb(user_profile):
-    return random.choice(user_profile.knownVerbs.all())
+def generateVerb(user_profile, transitivity_required = False):
+    if transitivity_required:
+        return random.choice(user_profile.known_verbs.all().filter(transitive=True)) 
+    else:
+        return random.choice(user_profile.known_verbs.all())
 
-def getCompatibleNoun(verb,subjectOrObject, forbiddenWords = []):
+def generateNoun(user_profile):
+    return random.choice(user_profile.known_nouns.all())
+
+def getCompatibleNoun(verb,user_profile,subjectOrObject, forbiddenWords = []):
     
     if subjectOrObject == 'subject':
         requirements = verb.subject_requires.all()
@@ -38,7 +46,7 @@ def getCompatibleNoun(verb,subjectOrObject, forbiddenWords = []):
         requirements = verb.object_requires.all()
         exclusions = verb.object_excludes.all()
         
-    possibleNouns = EnglishNoun.objects.all()
+    possibleNouns = user_profile.known_nouns.all()
     for desiredProperty in requirements:
         validNouns = desiredProperty.noun_set.all()
         possibleNouns = (possibleNouns & validNouns)
@@ -49,15 +57,14 @@ def getCompatibleNoun(verb,subjectOrObject, forbiddenWords = []):
     
     chosenNoun = random.choice(possibleNouns)
     if chosenNoun in forbiddenWords:
-        return getCompatibleNoun(verb, subjectOrObject,forbiddenWords)
+        return getCompatibleNoun(verb, user_profile,subjectOrObject,forbiddenWords)
     else:
         return chosenNoun
     
 def getTriplet(user_profile):
     #returns a mutually compatible subject/object/verb set as a dictionary
-    verb = generateVerb(user_profile)
-    subject = getCompatibleNoun(verb,'subject')
-    object = getCompatibleNoun(verb,'object', [subject])
+    verb = generateVerb(user_profile,True)
+    subject = getCompatibleNoun(verb,user_profile,'subject')
+    object = getCompatibleNoun(verb,user_profile,'object', [subject])
     return (subject, object, verb)
-    
     
