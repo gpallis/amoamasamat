@@ -6,4 +6,4 @@ build
 dist
 *.egg
 *.jar
-fabsettings.py
+amoamasamat/settings.py
