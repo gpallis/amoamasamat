@@ -27,12 +27,22 @@ def getGeneratorFunction(name):
     }
     return functionDictionary[name]
 
+def getLevel(user_profile):
+    user_level = user_profile.level
+    level_object = Level.objects.get(level_number=user_level)
+    return level_object
+
+def getSubset(user_profile):
+    return getLevel(user_profile).subset_used
 
 def generateVerb(user_profile, transitivity_required = False):
+    
+    permittedConjugations = getSubset(user_profile).conjugations.all()
+    
     if transitivity_required:
-        return random.choice(user_profile.known_verbs.all().filter(transitive=True)) 
+        return random.choice(user_profile.known_verbs.all().filter(transitive=True).filter(translation__conjugation__in=permittedConjugations))
     else:
-        return random.choice(user_profile.known_verbs.all())
+        return random.choice(user_profile.known_verbs.all().filter(translation__conjugation__in=permittedConjugations))
 
 def generateNoun(user_profile):
     return random.choice(user_profile.known_nouns.all())

@@ -1,5 +1,6 @@
 from django.db import models
 from englishgrammar.models import EnglishVerb,EnglishNoun
+from latingrammar.models import Subset
 
 # Create your models here.
 class Lesson(models.Model):
@@ -10,7 +11,7 @@ class Lesson(models.Model):
         return self.title
     def get_absolute_url(self):
         return "/lessons/" + str(self.level) + "/"
-    
+
 class Level(models.Model):
     title = models.CharField(max_length=200)
     level_number = models.IntegerField()
@@ -18,5 +19,7 @@ class Level(models.Model):
     question_generator = models.CharField(max_length=100,default="threeWordSentence")
     verb_unlocks = models.ManyToManyField(EnglishVerb,blank=True)
     noun_unlocks = models.ManyToManyField(EnglishNoun,blank=True)
+    subset_used = models.ForeignKey(Subset,default=1) #'1' is the 'all' subset
     def __unicode__(self):
         return self.title
+    
