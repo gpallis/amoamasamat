@@ -21,7 +21,7 @@ def getRandomVerbQuestion(user_profile):
     person = random.randrange(1,7)
     
     question = getEnglishPronoun(person) + " " + englishVerbs.getEnglishVerbForm(englishVerb,person,'Present Active')
-    answer = latinVerbs.getLatinVerbForm(latinVerb,person,'Present Active')
+    answer = latinVerbs.getLatinVerbForm(latinVerb,person,'Present Activ')
     return (question,answer)
     
 def getEnglishPronoun(person):
