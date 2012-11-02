@@ -118,7 +118,6 @@ def showLearningPage(request, pageLevelString):
     })
     
 def play(request):
-    
     #Sanity check - show course end if there.
     if endOfCourse(request):
         return render(request,'end-of-course.html',{})

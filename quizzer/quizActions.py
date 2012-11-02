@@ -9,7 +9,7 @@ from englishgrammar.models import *
 def checkAnswer(correctAnswer,givenAnswer):
     #Returns [boolean,message]
     #message is html, escaped, so shouldn't contain original answer!
-    if set( correctAnswer.split(" ")) == set(givenAnswer.split(" ") ):
+    if set( correctAnswer.lower().split(" ")) == set(givenAnswer.lower().split(" ") ):
         return (True,'<span style="color:green">Correct! Well done.</span>')
     else:
         #Answer is wrong.
@@ -27,6 +27,31 @@ def getRandomVerbQuestion(user_profile):
 def getEnglishPronoun(person):
     persons = (None, 'I', 'You', random.choice(['He','She','It']), 'We', 'You (plural)', 'They')
     return persons[person]
+
+def getPreamble(case):
+    if case == 'genitive':
+        return "of the"
+    if case == 'dative':
+        return "to the"
+    if case == 'ablative':
+        return "by the"
+    
+    #None of these
+    return ""
+    
+def getEnglishOneWordSentence(noun,plurality,case):
+    return (getPreamble(case) + " " + englishNouns.getEnglishNounForm(noun,plurality))
+    
+def genitiveOrDative(user_profile):
+    englishNoun = quizUtility.generateNoun(user_profile)
+    latinNoun = englishNoun.translation
+    
+    case = random.choice(['genitive', 'dative'])
+    plurality = random.choice(['singular','plural'])
+    
+    question = getEnglishOneWordSentence(englishNoun,plurality,case)
+    answer = latinNouns.getLatinNounForm(latinNoun,case,plurality)
+    return (question,answer)
     
 def twoWordNominativeSentence(user_profile):
     englishVerb = quizUtility.generateVerb(user_profile)

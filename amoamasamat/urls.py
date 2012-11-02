@@ -16,6 +16,7 @@ urlpatterns = patterns('',
     url(r'^signout/$', 'webpages.views.signout'),
     
     url(r'^favicon\.ico$', 'django.views.generic.simple.redirect_to', {'url':'static/amoamasamat/favicon.ico'}),
+    url(r'dong/(?P<hello>.)', 'django.views.generic.simple.direct_to_template', {'template':'yayaya.html' } ),
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),

@@ -20,6 +20,7 @@ def getAppropriateQuestion(request):
 
 def getGeneratorFunction(name):
     functionDictionary = {
+        "genitiveOrDative":quizActions.genitiveOrDative,
         "twoWordNominativeSentence":quizActions.twoWordNominativeSentence,
         "twoWordAccusativeSentence":quizActions.twoWordAccusativeSentence,
         "threeWordSentence":quizActions.getChapterThreeShortSentence,
@@ -45,7 +46,10 @@ def generateVerb(user_profile, transitivity_required = False):
         return random.choice(user_profile.known_verbs.all().filter(translation__conjugation__in=permittedConjugations))
 
 def generateNoun(user_profile):
-    return random.choice(user_profile.known_nouns.all())
+    
+    permittedDeclensions = getSubset(user_profile).declensions.all()
+    
+    return random.choice(user_profile.known_nouns.all().filter(translation__declension__in=permittedDeclensions))
 
 def getCompatibleNoun(verb,user_profile,subjectOrObject, forbiddenWords = []):
     
