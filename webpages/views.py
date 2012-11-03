@@ -61,7 +61,7 @@ def showSignUpPage(request):
         return render(request,'signup.html', {})
 
 def createAccount(email):
-    user = User.objects.create_user(email,email,'hello')
+    user = User.objects.create_user(email.lower(),email.lower(),'hello')
     user.save()
     #Make them level
     user_profile = user.profile
@@ -80,7 +80,7 @@ def is_attempted_login(request):
 
 def sign_in_user(request):
     #Right now, all users have the password hello.
-    user = authenticate(username=request.POST['login-email'], password='hello')
+    user = authenticate(username=request.POST['login-email'].lower(), password='hello')
     if user is not None:
         login(request, user)
         return HttpResponseRedirect('/signin')
